@@ -1,7 +1,6 @@
- # Diagrama de Classes UML - Sistema de Adoção de Animais
+# Diagrama de Classes UML - Sistema de Adoção de Animais
 
 ```mermaid
-
 classDiagram
     class StatusAnimal {
         <<enumeration>>
@@ -21,59 +20,62 @@ classDiagram
 
     class Pessoa {
         <<abstract>>
-        #String nome
-        #int idade
+        #nome: String
+        #idade: int
     }
 
     class Adotante {
-        -String moradia
-        -float area_util
-        -bool experiencia_pets
-        -bool criancas_em_casa
-        -bool outros_animais
+        -moradia: String
+        -area_util: float
+        -experiencia_pets: bool
+        -criancas_em_casa: bool
+        -outros_animais: bool
         +validar_elegibilidade() bool
     }
 
     class Animal {
         <<abstract>>
-        #int id_animal
-        #String nome
-        #SexoAnimal sexo
-        #int idade_meses
-        #String porte
-        #List~String~ temperamento
-        #StatusAnimal status
-        +alterar_status(novo_status) void
+        #id_animal: int
+        #nome: String
+        #sexo: SexoAnimal
+        #idade_meses: int
+        #porte: String
+        #temperamento: List~String~
+        #status: StatusAnimal
+        +alterar_status(novo_status: StatusAnimal) void
     }
 
     class VacinavelMixin {
-        -List historico_vacinas
-        +vacinar(vacina) void
+        -historico_vacinas: List~String~
+        +vacinar(vacina: String) void
     }
 
     class AdestravelMixin {
-        -int nivel_adestramento
+        -nivel_adestramento: int
         +treinar() void
     }
 
     class Cachorro {
-        -String necessidade_passeio
+        -necessidade_passeio: String
+        -raca: String
+        -adestrado: bool
+        
     }
 
     class Gato {
-        -int nivel_independencia
+        -nivel_independencia: int
     }
 
     class Reserva {
-        -DateTime data_criacao
-        -bool expirada
+        -data_criacao: DateTime
+        -expirada: bool
         +verificar_expiracao() bool
     }
 
     class ContratoAdocao {
-        -DateTime data_adocao
-        -float taxa_aplicada
-        -String termos
+        -data_adocao: DateTime
+        -taxa_aplicada: float
+        -termos: String
         +gerar_contrato() String
     }
 
@@ -94,5 +96,4 @@ classDiagram
     Reserva "1" --> "1" Animal : reserva
     ContratoAdocao "*" --> "1" Adotante : assinado por
     ContratoAdocao "1" --> "1" Animal : refere-se a
-    
 ```
