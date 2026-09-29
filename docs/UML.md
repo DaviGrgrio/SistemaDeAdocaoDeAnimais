@@ -94,4 +94,5 @@ classDiagram
     Reserva "1" --> "1" Animal : reserva
     ContratoAdocao "*" --> "1" Adotante : assinado por
     ContratoAdocao "1" --> "1" Animal : refere-se a
-``
+    
+```
