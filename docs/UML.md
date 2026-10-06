@@ -64,6 +64,8 @@ classDiagram
 
     class Gato {
         -nivel_independencia: int
+        -fiv_felv_negativo: bool
+        -usa_caixa_areia: bool
     }
 
     class Reserva {
