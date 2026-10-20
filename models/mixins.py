@@ -21,7 +21,10 @@ class VacinavelMixin:
         self._vacinas.append(
             {"vacina": nome_vacina.strip(), "data": (data or date.today()).isoformat()}
         )
-
+    def to_dict(self) -> dict:
+        dados = super().to_dict()
+        dados["vacinas"] = list(self._vacinas)
+        return dados
 
 class AdestravelMixin:
     """Nível de adestramento (0 a 5)."""
@@ -43,3 +46,8 @@ class AdestravelMixin:
         if self._nivel_adestramento < self.NIVEL_MAXIMO:
             self._nivel_adestramento += 1
         return self._nivel_adestramento
+
+    def to_dict(self) -> dict:
+        dados = super().to_dict()
+        dados["nivel_adestramento"] = self.nivel_adestramento
+        return dados

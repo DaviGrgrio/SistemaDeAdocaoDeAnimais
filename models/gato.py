@@ -62,3 +62,18 @@ class Gato(VacinavelMixin, Animal):
 
     def descrever_necessidades(self) -> str:
         return f"Gato com independência nível {self._nivel_independencia}/5."
+
+    def to_dict(self) -> dict:
+        dados = super().to_dict()
+        dados.update(nivel_independencia=self._nivel_independencia,
+                     fiv_felv_negativo=self._fiv_felv_negativo,
+                     usa_caixa_areia=self._usa_caixa_areia)
+        return dados
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "Gato":
+        return cls(**Animal._campos_base(d),
+                   nivel_independencia=d["nivel_independencia"],
+                   fiv_felv_negativo=d["fiv_felv_negativo"],
+                   usa_caixa_areia=d["usa_caixa_areia"],
+                   vacinas=d.get("vacinas"))

@@ -56,3 +56,17 @@ class Cachorro(VacinavelMixin, AdestravelMixin, Animal):
 
     def descrever_necessidades(self) -> str:
         return f"Precisa de passeios com frequência {self._necessidade_passeio}."
+
+
+    #Serialização
+    def to_dict(self) -> dict:
+        dados = super().to_dict()
+        dados.update(raca=self._raca, necessidade_passeio=self._necessidade_passeio)
+        return dados
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "Cachorro":
+        return cls(**Animal._campos_base(d), raca=d["raca"],
+                   necessidade_passeio=d["necessidade_passeio"],
+                   vacinas=d.get("vacinas"),
+                   nivel_adestramento=d.get("nivel_adestramento", 0))

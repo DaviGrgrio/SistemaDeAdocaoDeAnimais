@@ -34,7 +34,7 @@ class Animal(ABC):
         porte: str,
         temperamento: List[str],
         status: StatusAnimal = StatusAnimal.DISPONIVEL,
-        data_entrada: Optional[date] = None       
+        data_entrada: Optional[date] = None      
     ) -> None:
         self._id_animal = id_animal
         self.nome = nome
@@ -44,13 +44,16 @@ class Animal(ABC):
         self._temperamento = list(temperamento)
         self._status = status
         self._data_entrada = data_entrada or date.today()
-
+        self._adotante = None
     #Decoradores
 
     @property
     def id_animal(self) -> int:
         return self._id_animal
 
+    @property
+    def sexo(self) -> SexoAnimal:
+        return self._sexo
     
     @property
     def nome(self) -> str:
@@ -96,6 +99,13 @@ class Animal(ABC):
     def data_entrada(self) -> date:
         return self._data_entrada
 
+    @property
+    def adotante(self):
+        return self._adotante
+
+    def definir_adotante(self, adotante) -> None:
+        self._adotante = adotante
+
     def alterar_status(self, novo_status: StatusAnimal) -> None:
         # As transições válidas entram na semana 4
         self._status = novo_status
@@ -125,3 +135,28 @@ class Animal(ABC):
         if not isinstance(other, Animal):
             return NotImplemented
         return self._data_entrada < other._data_entrada
+
+    #Serialização
+
+    def to_dict(self) -> dict:
+        return {
+            "tipo": type(self).__name__,
+            "id_animal": self._id_animal,
+            "nome": self._nome,
+            "sexo": self._sexo.name,
+            "idade_meses": self._idade_meses,
+            "porte": self._porte,
+            "temperamento": list(self._temperamento),
+            "status": self._status.name,
+            "data_entrada": self._data_entrada.isoformat(),
+        }
+
+    @staticmethod
+    def _campos_base(d: dict) -> dict:
+        return {
+            "id_animal": d["id_animal"], "nome": d["nome"],
+            "sexo": SexoAnimal[d["sexo"]], "idade_meses": d["idade_meses"],
+            "porte": d["porte"], "temperamento": d["temperamento"],
+            "status": StatusAnimal[d["status"]],
+            "data_entrada": date.fromisoformat(d["data_entrada"]),
+        }
