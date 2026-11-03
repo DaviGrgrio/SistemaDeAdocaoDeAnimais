@@ -147,7 +147,7 @@ def cmd_relatorio(svc, a) -> None:
 
 
 def cmd_seed(svc, a) -> None:
-    from seed import popular
+    from src.seed import popular
     popular(a.dados)
     print("Dados de exemplo criados.")
 
