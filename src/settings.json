@@ -1,0 +1,7 @@
+{
+  "idade_minima": 18,
+  "area_minima_porte_g": 50.0,
+  "reserva_horas": 48,
+  "taxa_padrao": "padrao",
+  "pesos": {"porte_moradia": 0.3, "idade_energia": 0.25, "experiencia": 0.25, "criancas": 0.2}
+}
