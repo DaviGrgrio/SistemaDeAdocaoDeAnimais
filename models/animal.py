@@ -1,9 +1,10 @@
 #Importa módulos abc (AbstractBaseClass), enum para opções fixas e List para TypeHint
 
 from abc import ABC, abstractmethod
-from datetime import date
+from datetime import date, datetime, time
 from enum import Enum
 from typing import List, Optional
+from models.excecoes import TransicaoDeEstadoInvalidaError
 
 PORTES_VALIDOS = ("P", "M", "G")
 
@@ -20,6 +21,15 @@ class StatusAnimal(Enum):
 class SexoAnimal(Enum):
     MACHO = "Macho"
     FEMEA = "Fêmea"
+
+TRANSICOES = {
+    StatusAnimal.DISPONIVEL: {StatusAnimal.RESERVADO, StatusAnimal.INADOTAVEL},
+    StatusAnimal.RESERVADO: {StatusAnimal.ADOTADO, StatusAnimal.DISPONIVEL},  # volta ao expirar
+    StatusAnimal.ADOTADO: {StatusAnimal.DEVOLVIDO},
+    StatusAnimal.DEVOLVIDO: {StatusAnimal.QUARENTENA, StatusAnimal.DISPONIVEL, StatusAnimal.INADOTAVEL},
+    StatusAnimal.QUARENTENA: {StatusAnimal.DISPONIVEL, StatusAnimal.INADOTAVEL},
+    StatusAnimal.INADOTAVEL: set(),
+}
 
 
 class Animal(ABC):
@@ -45,6 +55,8 @@ class Animal(ABC):
         self._status = status
         self._data_entrada = data_entrada or date.today()
         self._adotante = None
+        self._historico: List[dict] = []
+        self.registrar_evento("entrada", quando=datetime.combine(self._data_entrada, time.min))
     #Decoradores
 
     @property
@@ -106,9 +118,29 @@ class Animal(ABC):
     def definir_adotante(self, adotante) -> None:
         self._adotante = adotante
 
-    def alterar_status(self, novo_status: StatusAnimal) -> None:
-        # As transições válidas entram na semana 4
+    def alterar_status(self, novo_status: StatusAnimal, detalhe: str = "",
+                       quando: Optional[datetime] = None) -> None:
+        """Muda o status respeitando as transições válidas."""
+        if novo_status not in TRANSICOES[self._status]:
+            raise TransicaoDeEstadoInvalidaError(
+                f"Transição {self._status.name} -> {novo_status.name} não é permitida.")
+        antigo = self._status
         self._status = novo_status
+        self.registrar_evento("mudanca_status", f"{antigo.name} -> {novo_status.name} {detalhe}".strip(), quando)
+
+    def registrar_evento(self, tipo: str, detalhe: str = "", quando: Optional[datetime] = None) -> None:
+        self._historico.append(
+            {"tipo": tipo, "detalhe": detalhe, "data": (quando or datetime.now()).isoformat()})
+
+    @property
+    def historico(self) -> List[dict]:
+        return list(self._historico)
+
+    def restaurar_historico(self, historico: List[dict]) -> None:
+        self._historico = list(historico)
+
+    def __iter__(self):
+        return iter(self._historico)
 
     @abstractmethod
     def descrever_necessidades(self) -> str:
@@ -149,6 +181,7 @@ class Animal(ABC):
             "temperamento": list(self._temperamento),
             "status": self._status.name,
             "data_entrada": self._data_entrada.isoformat(),
+            "historico": list(self._historico),
         }
 
     @staticmethod

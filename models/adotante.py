@@ -79,13 +79,10 @@ class Adotante(Pessoa):
             self._animais_adotados.append(animal)
         animal.definir_adotante(self)
 
-    def adotar(self, animal: Animal) -> None:
-        if not self.validar_elegibilidade():
-            raise ValueError("Adotante Não elegível.")
-        if animal.status != StatusAnimal.DISPONIVEL:
-            raise ValueError("Animal não está disponível para adoção.")
-        animal.alterar_status(StatusAnimal.ADOTADO)
-        self.vincular_animal(animal)
+    def desvincular_animal(self, animal: Animal) -> None:
+        if animal in self._animais_adotados:
+            self._animais_adotados.remove(animal)
+        animal.definir_adotante(None)
         
     def validar_elegibilidade(self) -> bool:
         """Regra mínima: adotante com 18 anos ou mais."""
